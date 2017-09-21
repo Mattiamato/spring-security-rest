@@ -23,7 +23,7 @@ public class AuthorizationServiceConfig extends AuthorizationServerConfigurerAda
 
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-		security.tokenKeyAccess("isAuthenticated()");
+		security.checkTokenAccess("isAuthenticated()");
 	}
 
 	@Override

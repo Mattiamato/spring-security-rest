@@ -33,8 +33,8 @@ public class UserController {
 		return userService.findAll();
 	}
 
-	@PostMapping(value = "/users")
-	public String createUser(@RequestBody UserRegistration userRegistration) {
+	@PostMapping(value = "/register")
+	public String register(@RequestBody UserRegistration userRegistration) {
 		if (!StringUtils.isEmpty(userRegistration.getPassword())
 				&& !userRegistration.getPassword().equals(userRegistration.getPasswordConfirmation())) {
 			return "The passwords doesn't match.";

@@ -7,6 +7,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
@@ -35,6 +37,11 @@ public class Application {
 	}
 
 	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(11);
+	}
+
+	@Bean
 	public TokenStore tokenStore() {
 		return new InMemoryTokenStore();
 	}
@@ -42,8 +49,10 @@ public class Application {
 	@Autowired
 	public void authenticationManager(AuthenticationManagerBuilder builder, UserRepository userRepo) throws Exception {
 		if (userRepo.count() == 0) {
-			userRepo.save(new User("admin", "password", Arrays.asList(new Role("ADMIN"), new Role("USER"))));
+			userRepo.save(new User("admin", passwordEncoder().encode("password"),
+					Arrays.asList(new Role("ACTUATOR"), new Role("USER"))));
 		}
-		builder.userDetailsService(username -> new CustomUserDetails(userRepo.findByUsername(username)));
+		builder.userDetailsService(username -> new CustomUserDetails(userRepo.findByUsername(username)))
+				.passwordEncoder(passwordEncoder());
 	}
 }
