@@ -55,4 +55,9 @@ public class CustomUserDetails implements UserDetails {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return this.getUsername() + " " + this.getAuthorities();
+	}
+
 }
