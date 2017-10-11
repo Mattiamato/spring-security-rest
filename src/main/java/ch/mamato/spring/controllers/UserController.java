@@ -48,7 +48,7 @@ public class UserController {
 			return "Invalid username.";
 		}
 		userService.save(new User(userRegistration.getUsername(), userRegistration.getPassword(),
-				Arrays.asList(new Role("USER"))));
+				Arrays.asList(new Role("ROLE_USER"))));
 		return "User created";
 	}
 

@@ -28,7 +28,8 @@ public class AuthorizationServiceConfig extends AuthorizationServerConfigurerAda
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.inMemory().withClient("my-trusted-client").authorizedGrantTypes("password", "refresh_token")
+		clients.inMemory().withClient("my-trusted-client")
+				.authorizedGrantTypes("client_credentials", "password", "refresh_token")
 				.authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT").scopes("read", "write", "trust")
 				.resourceIds("oauth2-resource").accessTokenValiditySeconds(5000).secret("secret").and()
 				.withClient("webapp").authorizedGrantTypes("implicit", "refresh_token").scopes("read")
