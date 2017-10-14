@@ -11,6 +11,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +28,8 @@ import ch.mamato.spring.dtos.UserRegistration;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class BasicHttpsRequestsTest {
+
+	private static final String CLIENT_ID_IMPLICIT = "webapp";
 
 	@LocalServerPort
 	private int port;
@@ -74,15 +78,17 @@ public class BasicHttpsRequestsTest {
 	}
 
 	@Test
-	public void homeShouldReturnDefaultMessage() throws Exception {
+	public void getHomeTest() throws Exception {
 		assertThat(this.restTemplate.getForObject("https://localhost:" + port + "/", String.class))
 				.contains("Hello, you are not logged in!");
 	}
 
 	@Test
-	public void usersShouldReturnDefaultMessage() throws Exception {
-		assertThat(this.restTemplate.getForObject("https://localhost:" + port + "/users", String.class))
-				.isEqualToIgnoringCase("[{\"id\":1,\"username\":\"admin\"}]");
+	public void getUsersTest() throws Exception {
+		String result = this.restTemplate.getForObject("https://localhost:" + port + "/users", String.class);
+		JSONArray response = new JSONArray(result);
+		JSONObject first = (JSONObject) response.get(0);
+		assertThat(first.toString()).isEqualToIgnoringCase("{\"id\":1,\"username\":\"admin\"}");
 	}
 
 	@Test
@@ -90,6 +96,11 @@ public class BasicHttpsRequestsTest {
 		UserRegistration newUser = new UserRegistration("test", "test_password", "test_password");
 		assertThat(this.restTemplate.postForObject("https://localhost:" + port + "/register", newUser, String.class))
 				.isEqualToIgnoringCase("User created");
-	}
 
+		String result = this.restTemplate.getForObject("https://localhost:" + port + "/users", String.class);
+		JSONArray response = new JSONArray(result);
+		assertThat(response.length()).isEqualTo(2);
+		JSONObject first = (JSONObject) response.get(1);
+		assertThat(first.toString()).isEqualToIgnoringCase("{\"id\":2,\"username\":\"test\"}");
+	}
 }
